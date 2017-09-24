@@ -1,26 +1,29 @@
 import {calculateMove} from './calculateMove';
 import {Bot, Human} from '../../constants';
-import {newBoard} from '../';
+import {generateBoard} from '../';
+
+const size = 3;
+const {board} = generateBoard(size);
 
 describe('calculateMove', () => {
   it('should return a move', () => {
-    expect(calculateMove(newBoard)).toEqual({location: 4, score: 5});
+    expect(calculateMove(board, size)).toEqual({location: 4, score: 4});
   });
 
   it('should block human', () => {
-    const board = [...newBoard];
-    board[0] = Human;
-    board[1] = Bot;
-    board[4] = Human;
-    expect(calculateMove(board)).toEqual({location: 8, score: 4});
+    const _board = [...board];
+    _board[0] = Human;
+    _board[1] = Bot;
+    _board[4] = Human;
+    expect(calculateMove(_board, size)).toEqual({location: 8, score: 7});
   });
 
   it('should prioritize winning over blocking human', () => {
-    const board = [...newBoard];
-    board[1] = Human;
-    board[2] = Bot;
-    board[4] = Human;
-    board[5] = Bot;
-    expect(calculateMove(board)).toEqual({location: 8, score: 7});
+    const _board = [...board];
+    _board[1] = Human;
+    _board[2] = Bot;
+    _board[4] = Human;
+    _board[5] = Bot;
+    expect(calculateMove(_board, size)).toEqual({location: 8, score: 8});
   });
 });

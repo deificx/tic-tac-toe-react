@@ -1,5 +1,16 @@
 #Board {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
   margin: auto;
+}
+
+.w3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.w4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.w5 {
+  grid-template-columns: repeat(5, 1fr);
 }

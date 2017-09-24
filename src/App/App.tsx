@@ -4,22 +4,38 @@ import * as React from 'react';
 import Board from '../Board';
 import './App.css';
 import {Bot, Draw, Empty, Human, None} from '../constants';
-import {checkBoard, calculateMove, newBoard} from '../utils';
+import {checkBoard, calculateMove, generateBoard} from '../utils';
+
+function convert(n: string): BoardSize {
+  const sizes: BoardSize[] = [3, 4, 5];
+  return sizes.filter(i => i.toString() === n).shift() || 3;
+}
 
 export default class App extends React.Component<{}, AppState> {
   constructor() {
     super();
 
+    this.handleBoardSize = this.handleBoardSize.bind(this);
     this.handleMarkBoard = this.handleMarkBoard.bind(this);
     this.handleRestart = this.handleRestart.bind(this);
     this.handleTestBoard = this.handleTestBoard.bind(this);
     this.handleBotMove = this.handleBotMove.bind(this);
 
+    const size = 3;
+    const {board} = generateBoard(size);
+
     this.state = {
-      board: newBoard,
+      board,
+      size,
       turn: Human,
       winner: None,
     };
+  }
+
+  handleBoardSize(event: any) {
+    this.setState({size: convert(event.target.value)}, () => {
+      this.handleRestart();
+    });
   }
 
   handleMarkBoard(player: Bot | Human, location: number) {
@@ -40,7 +56,8 @@ export default class App extends React.Component<{}, AppState> {
   }
 
   handleRestart() {
-    this.setState({board: newBoard, winner: None}, () => {
+    const {board} = generateBoard(this.state.size);
+    this.setState({board, winner: None}, () => {
       if (this.state.turn === Bot) {
         this.handleBotMove();
       }
@@ -48,11 +65,21 @@ export default class App extends React.Component<{}, AppState> {
   }
 
   render() {
-    const {turn, winner} = this.state;
+    const {size, turn, winner} = this.state;
     return (
       <div id="App">
         <div style={{height: '100px'}}>
           <h1>Tic Tac Toe</h1>
+          <select onChange={this.handleBoardSize}>
+            {[3, 4, 5].map((boardSize: BoardSize) => {
+              return (
+                <option
+                  key={boardSize}
+                  value={boardSize}
+                >{`${boardSize}x${boardSize}`}</option>
+              );
+            })}
+          </select>
           <button onClick={this.handleRestart}>New Game</button>
           {winner === Human && <p>Foul smelly human wins&hellip; and stinks</p>}
           {winner === Bot && <p>Computer master race wins</p>}
@@ -61,14 +88,19 @@ export default class App extends React.Component<{}, AppState> {
           )}
         </div>
         <div id="Game">
-          <Board board={this.state.board} onMarkBoard={this.handleMarkBoard} />
+          <Board
+            board={this.state.board}
+            onMarkBoard={this.handleMarkBoard}
+            size={size}
+          />
         </div>
       </div>
     );
   }
 
   private handleTestBoard(moveBot: boolean) {
-    const winner: Winner = checkBoard(this.state.board);
+    const {board, size} = this.state;
+    const winner: Winner = checkBoard(board, size);
     if (moveBot && winner === None) {
       this.handleBotMove();
     } else {
@@ -77,7 +109,8 @@ export default class App extends React.Component<{}, AppState> {
   }
 
   private handleBotMove() {
-    const move = calculateMove(this.state.board);
+    const {board, size} = this.state;
+    const move = calculateMove(board, size);
     this.handleMarkBoard(Bot, move.location);
   }
 }

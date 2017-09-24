@@ -12,6 +12,7 @@ type MarkBoard = (player: Bot | Human, location: number) => void;
 
 interface AppState {
   board: Board;
+  size: BoardSize;
   turn: Bot | Human;
   winner: Winner;
 }

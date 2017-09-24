@@ -1,31 +1,25 @@
 import {None, Draw, Empty, Human, Bot} from '../../constants';
-import {wins} from '../';
+import {generateBoard} from '../';
 
-const tileTypeToWinner = (tile: TileType): Winner => {
-  switch (tile) {
-    case Empty:
+const compareValues = (board: Board): ((win: nn) => Winner) => {
+  return (win: nn): Winner => {
+    const player: TileType = board[win[0]];
+    if (player === Empty) {
       return None;
-    case Human:
-      return Human;
-    case Bot:
-      return Bot;
-  }
-  return None;
+    }
+    return win
+      .map((location: number) => board[location])
+      .every((p: TileType) => p === player)
+      ? player
+      : None;
+  };
 };
 
-export const checkBoard = (board: Board): Winner => {
+export const checkBoard = (board: Board, size: BoardSize): Winner => {
+  const {wins} = generateBoard(size);
   const winner: Winner =
     wins
-      .map(win => {
-        if (
-          board[win[0]] !== Empty &&
-          board[win[0]] === board[win[1]] &&
-          board[win[1]] === board[win[2]]
-        ) {
-          return tileTypeToWinner(board[win[0]]);
-        }
-        return None;
-      })
+      .map(compareValues(board))
       .filter(w => w !== None)
       .shift() || None;
   if (winner === None && !board.some(b => b === Empty)) {

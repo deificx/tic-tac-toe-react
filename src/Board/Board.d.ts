@@ -3,4 +3,5 @@
 interface BoardProps {
   board: Board;
   onMarkBoard: MarkBoard;
+  size: BoardSize;
 }
