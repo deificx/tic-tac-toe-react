@@ -1,7 +1,10 @@
-/// <reference path="./App/App.d.ts" />
+export const Bot = 'Bot' as const;
+export const Human = 'Human' as const;
+export const Empty = 'Empty' as const;
+export const None = 'None' as const;
+export const Draw = 'Draw' as const;
 
-export const Bot: Bot = 'Bot';
-export const Human: Human = 'Human';
-export const Empty: Empty = 'Empty';
-export const None: None = 'None';
-export const Draw: Draw = 'Draw';
+export type Player = typeof Bot | typeof Human;
+export type TileType = Player | typeof Empty;
+export type Winner = Player | typeof Draw | typeof None;
+export type BoardState = TileType[];
